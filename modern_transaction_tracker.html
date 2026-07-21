@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Tracker</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons for UI graphics -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #f8fafc;
+        }
+
+        /* Hide arrows on number input for a cleaner look */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* Custom elegant scrollbar for transaction history */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Smooth slide-in animation for new transactions */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex items-center justify-center min-h-screen p-4 sm:p-8">
+
+    <main class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col h-[85vh] max-h-[800px]">
+        
+        <!-- Header Section: Balance & Summaries -->
+        <header class="bg-slate-900 text-white p-6 relative overflow-hidden shrink-0 shadow-md">
+            <!-- Decorative background elements -->
+            <div class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-10 -left-10 w-32 h-32 bg-rose-500 rounded-full blur-3xl"></div>
+            </div>
+            
+            <div class="relative z-10 text-center">
+                <h1 class="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-1">Total Balance</h1>
+                <h2 class="text-4xl font-bold tracking-tight mb-6" id="balance">$0.00</h2>
+                
+                <div class="flex justify-between gap-3">
+                    <!-- Income Summary -->
+                    <div class="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-md border border-white/10">
+                        <div class="flex justify-center items-center gap-1 text-emerald-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                            <i data-lucide="trending-up" class="w-3 h-3"></i> Income
+                        </div>
+                        <p class="text-lg font-semibold tracking-wide text-emerald-50" id="money-plus">+$0.00</p>
+                    </div>
+                    <!-- Expense Summary -->
+                    <div class="flex-1 bg-white/10 rounded-2xl p-3 backdrop-blur-md border border-white/10">
+                        <div class="flex justify-center items-center gap-1 text-rose-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                            <i data-lucide="trending-down" class="w-3 h-3"></i> Expense
+                        </div>
+                        <p class="text-lg font-semibold tracking-wide text-rose-50" id="money-minus">-$0.00</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="p-5 border-b border-slate-100 shrink-0 bg-white relative z-10">
+            <form id="transaction-form" class="space-y-3">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <!-- Description Input -->
+                    <div class="flex-1 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="tag" class="w-4 h-4 text-slate-400"></i>
+                        </div>
+                        <input type="text" id="text" placeholder="Transaction name..." autocomplete="off"
+                            class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 transition-all text-sm placeholder-slate-400">
+                    </div>
+                    
+                    <!-- Amount Input -->
+                    <div class="sm:w-32 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-slate-400 font-medium text-sm">$</span>
+                        </div>
+                        <input type="number" id="amount" placeholder="0.00" step="0.01" min="0" autocomplete="off"
+                            class="w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 transition-all text-sm placeholder-slate-400">
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <button type="button" id="btn-add-income" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Add Income
+                    </button>
+                    <button type="button" id="btn-add-expense" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        <i data-lucide="minus-circle" class="w-4 h-4"></i> Add Expense
+                    </button>
+                </div>
+                
+                <!-- Inline Error Message -->
+                <div id="error-message" class="hidden text-rose-500 text-xs text-center font-medium mt-2">
+                    Please enter both a name and a valid amount.
+                </div>
+            </form>
+        </section>
+
+        <section class="flex-1 flex flex-col p-5 min-h-0 bg-slate-50/50 relative">
+            <div class="flex items-center justify-between mb-3 shrink-0">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">History</h3>
+                <button id="btn-clear" class="text-xs text-slate-400 hover:text-rose-500 transition-colors font-medium flex items-center gap-1 hidden">
+                    <i data-lucide="trash-2" class="w-3 h-3"></i> Clear
+                </button>
+            </div>
+            
+            <!-- List Container -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 -mr-2 relative">
+                <ul id="list" class="space-y-2.5 pb-2 flex flex-col">
+                    <!-- Transactions injected here by JS -->
+                </ul>
+
+                <!-- Empty State UI -->
+                <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                    <div class="w-12 h-12 bg-white border border-slate-100 shadow-sm rounded-full flex items-center justify-center mb-3">
+                        <i data-lucide="wallet" class="w-6 h-6 text-slate-300"></i>
+                    </div>
+                    <p class="text-sm font-medium text-slate-500">No transactions yet</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Initialize UI Icons
+        lucide.createIcons();
+
+        // DOM Elements
+        const balance = document.getElementById('balance');
+        const moneyPlus = document.getElementById('money-plus');
+        const moneyMinus = document.getElementById('money-minus');
+        const list = document.getElementById('list');
+        const form = document.getElementById('transaction-form');
+        const textInput = document.getElementById('text');
+        const amountInput = document.getElementById('amount');
+        const btnAddIncome = document.getElementById('btn-add-income');
+        const btnAddExpense = document.getElementById('btn-add-expense');
+        const btnClear = document.getElementById('btn-clear');
+        const emptyState = document.getElementById('empty-state');
+        const errorMessage = document.getElementById('error-message');
+
+        // State Management (Local Storage)
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+        // Formatting utilities
+        function formatMoney(number) {
+            return '$' + Math.abs(number).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        // Render a single transaction item
+        function addTransactionDOM(transaction) {
+            const isIncome = transaction.amount > 0;
+            const sign = isIncome ? '+' : '-';
+            
+            const colorClass = isIncome ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-rose-700 bg-rose-50 border-rose-100';
+            const icon = isIncome ? 'arrow-down-left' : 'arrow-up-right';
+            const amountColor = isIncome ? 'text-emerald-600' : 'text-rose-600';
+
+            const item = document.createElement('li');
+            item.classList.add('animate-slide-in', 'bg-white', 'border', 'border-slate-100', 'p-3', 'rounded-xl', 'flex', 'justify-between', 'items-center', 'shadow-sm', 'group');
+            
+            item.innerHTML = `
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="p-2 rounded-lg shrink-0 ${colorClass}">
+                        <i data-lucide="${icon}" class="w-4 h-4"></i>
+                    </div>
+                    <span class="font-medium text-slate-700 text-sm truncate capitalize">${transaction.text}</span>
+                </div>
+                <div class="flex items-center gap-2 shrink-0 pl-3">
+                    <span class="font-bold text-sm tracking-wide ${amountColor}">
+                        ${sign}${formatMoney(transaction.amount)}
+                    </span>
+                    <button onclick="removeTransaction(${transaction.id})" class="text-slate-300 hover:text-rose-500 p-1.5 rounded-md transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100" title="Delete">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+
+            list.prepend(item); // Add to top
+            lucide.createIcons({ root: item });
+        }
+
+        // Update top summaries (Balance, Income, Expense)
+        function updateValues() {
+            const amounts = transactions.map(t => t.amount);
+            const total = amounts.reduce((acc, item) => (acc += item), 0).toFixed(2);
+            const income = amounts.filter(item => item > 0).reduce((acc, item) => (acc += item), 0).toFixed(2);
+            const expense = (amounts.filter(item => item < 0).reduce((acc, item) => (acc += item), 0) * -1).toFixed(2);
+
+            balance.innerText = `${total < 0 ? '-' : ''}${formatMoney(total)}`;
+            moneyPlus.innerText = `+${formatMoney(income)}`;
+            moneyMinus.innerText = `-${formatMoney(expense)}`;
+        }
+
+        // Sync with browser storage
+        function updateLocalStorage() {
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
+
+        // Manage UI visibility based on data
+        function updateUIState() {
+            if (transactions.length === 0) {
+                emptyState.style.display = 'flex';
+                list.style.display = 'none';
+                btnClear.classList.add('hidden');
+            } else {
+                emptyState.style.display = 'none';
+                list.style.display = 'flex';
+                btnClear.classList.remove('hidden');
+            }
+        }
+
+        // Process Add Button Clicks
+        function handleTransaction(type) {
+            errorMessage.classList.add('hidden');
+            const textValue = textInput.value.trim();
+            let amountValue = parseFloat(amountInput.value);
+
+            if (textValue === '' || isNaN(amountValue) || amountValue <= 0) {
+                errorMessage.classList.remove('hidden');
+                // Remove error message after 3 seconds
+                setTimeout(() => errorMessage.classList.add('hidden'), 3000);
+                return;
+            }
+
+            // Adjust sign based on button clicked
+            amountValue = type === 'expense' ? -Math.abs(amountValue) : Math.abs(amountValue);
+
+            const transaction = {
+                id: Date.now(),
+                text: textValue,
+                amount: amountValue
+            };
+
+            transactions.push(transaction);
+            
+            initList(); // Re-render to ensure correct order
+            updateValues();
+            updateLocalStorage();
+            updateUIState();
+
+            textInput.value = '';
+            amountInput.value = '';
+            textInput.focus();
+        }
+
+        // Delete single transaction
+        function removeTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            initList();
+            updateValues();
+            updateLocalStorage();
+            updateUIState();
+        }
+
+        // Render full list
+        function initList() {
+            list.innerHTML = '';
+            transactions.forEach(addTransactionDOM);
+        }
+
+        // Initial setup
+        function init() {
+            initList();
+            updateValues();
+            updateUIState();
+        }
+
+        // Event Listeners
+        btnAddIncome.addEventListener('click', () => handleTransaction('income'));
+        btnAddExpense.addEventListener('click', () => handleTransaction('expense'));
+        
+        btnClear.addEventListener('click', () => {
+            transactions = [];
+            initList();
+            updateValues();
+            updateLocalStorage();
+            updateUIState();
+        });
+
+        // Prevent default form submission via enter key
+        form.addEventListener('submit', (e) => e.preventDefault());
+
+        // Initialize Application
+        init();
+    </script>
+</body>
+</html>
