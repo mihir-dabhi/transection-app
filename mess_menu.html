@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>A.P.J. Abdul Kalam Bhawan - Mess Menu (H10-A,B)</title>
+  <meta name="description" content="High contrast, clean, interactive daily & weekly mess menu for A.P.J. Abdul Kalam Bhawan (H10-A,B). Features live meal status countdowns and auto midnight rollover.">
+  <meta name="theme-color" content="#0a0c10">
+  
+  <!-- Modern Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & HIGH CONTRAST TOKENS
+       ========================================================================== */
+    :root[data-theme="dark"] {
+      --bg-main: #080a0f;
+      --bg-surface: #121620;
+      --bg-card: #181e2b;
+      --bg-card-hover: #202738;
+      --bg-card-active: #273146;
+      --border-color: #2e384e;
+      --border-highlight: #41506f;
+      
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      
+      --accent-primary: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      
+      --bf-color: #f59e0b;
+      --bf-bg: rgba(245, 158, 11, 0.12);
+      --bf-border: rgba(245, 158, 11, 0.35);
+      
+      --lunch-color: #10b981;
+      --lunch-bg: rgba(16, 185, 129, 0.12);
+      --lunch-border: rgba(16, 185, 129, 0.35);
+      
+      --snack-color: #f97316;
+      --snack-bg: rgba(249, 115, 22, 0.12);
+      --snack-border: rgba(249, 115, 22, 0.35);
+      
+      --dinner-color: #a855f7;
+      --dinner-bg: rgba(168, 85, 247, 0.12);
+      --dinner-border: rgba(168, 85, 247, 0.35);
+
+      --veg-color: #22c55e;
+      --nonveg-color: #ef4444;
+      --egg-color: #eab308;
+      --special-color: #ec4899;
+
+      --badge-now-bg: #166534;
+      --badge-now-text: #86efac;
+      --badge-next-bg: #1e3a8a;
+      --badge-next-text: #93c5fd;
+
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+      --shadow-md: 0 8px 16px rgba(0,0,0,0.4);
+      --shadow-lg: 0 16px 32px rgba(0,0,0,0.5);
+    }
+
+    :root[data-theme="light"] {
+      --bg-main: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-card-active: #e2e8f0;
+      --border-color: #cbd5e1;
+      --border-highlight: #94a3b8;
+      
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      
+      --accent-primary: #0284c7;
+      --accent-glow: rgba(2, 132, 199, 0.15);
+      
+      --bf-color: #d97706;
+      --bf-bg: #fef3c7;
+      --bf-border: #fcd34d;
+      
+      --lunch-color: #059669;
+      --lunch-bg: #d1fae5;
+      --lunch-border: #6ee7b7;
+      
+      --snack-color: #ea580c;
+      --snack-bg: #ffedd5;
+      --snack-border: #fdba74;
+      
+      --dinner-color: #7e22ce;
+      --dinner-bg: #f3e8ff;
+      --dinner-border: #d8b4fe;
+
+      --veg-color: #15803d;
+      --nonveg-color: #dc2626;
+      --egg-color: #ca8a04;
+      --special-color: #be185d;
+
+      --badge-now-bg: #dcfce7;
+      --badge-now-text: #14532d;
+      --badge-next-bg: #dbeafe;
+      --badge-next-text: #1e40af;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 24px rgba(0,0,0,0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      padding-bottom: 40px;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* HEADER */
+    .app-header {
+      background-color: var(--bg-surface);
+      border-bottom: 2px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-content {
+      padding: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-title-area {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-primary);
+      color: #000;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mess-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-card);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 0.78rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-clock-widget {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-highlight);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--veg-color);
+      box-shadow: 0 0 8px var(--veg-color);
+      animation: pulse-live 1.8s infinite;
+    }
+
+    @keyframes pulse-live {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    .icon-btn {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      min-height: 40px;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-highlight);
+      transform: translateY(-1px);
+    }
+
+    .status-summary-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-left: 4px solid var(--accent-primary);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .countdown-highlight {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--accent-primary);
+      background: var(--accent-glow);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* SLIDING TOP DATE BAR */
+    .date-slider-section {
+      margin: 16px 0 12px 0;
+      position: relative;
+    }
+
+    .slider-header-tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slider-nav-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .nav-arrow-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-arrow-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-primary);
+    }
+
+    .date-ribbon-wrapper {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 6px 2px 14px 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-highlight) transparent;
+    }
+
+    .date-ribbon-wrapper::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .date-ribbon-wrapper::-webkit-scrollbar-thumb {
+      background: var(--border-highlight);
+      border-radius: 999px;
+    }
+
+    .date-card {
+      flex: 0 0 105px;
+      scroll-snap-align: start;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    @media (max-width: 480px) {
+      .date-card {
+        flex: 0 0 92px;
+        padding: 10px 6px;
+      }
+    }
+
+    .date-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-highlight);
+      transform: translateY(-2px);
+    }
+
+    .date-card.active {
+      background: var(--bg-card-active);
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+
+    .date-card.is-today {
+      border-color: var(--accent-primary);
+    }
+
+    .today-pill {
+      position: absolute;
+      top: -9px;
+      background: var(--accent-primary);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .date-day-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .date-card.active .date-day-name {
+      color: var(--accent-primary);
+    }
+
+    .date-number {
+      font-size: 1.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin: 4px 0 2px 0;
+      color: var(--text-primary);
+    }
+
+    .date-month-year {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* TOOLBAR */
+    .controls-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-color);
+      padding: 14px;
+      border-radius: 14px;
+    }
+
+    .search-box {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-main);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 10px 14px 10px 40px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .filter-chips-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .filter-chip {
+      background: var(--bg-main);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .filter-chip:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .filter-chip.active {
+      background: var(--bg-card-active);
+      border-color: var(--accent-primary);
+      color: var(--text-primary);
+    }
+
+    .dot-tag {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .dot-veg { background-color: var(--veg-color); }
+    .dot-nonveg { background-color: var(--nonveg-color); }
+    .dot-egg { background-color: var(--egg-color); }
+    .dot-special { background-color: var(--special-color); }
+
+    /* CONSECUTIVE DAILY MEAL CARDS */
+    .daily-meals-container {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .meal-card {
+      background: var(--bg-surface);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+    }
+
+    .meal-card.active-meal {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .meal-card[data-meal="breakfast"] { border-top: 5px solid var(--bf-color); }
+    .meal-card[data-meal="lunch"] { border-top: 5px solid var(--lunch-color); }
+    .meal-card[data-meal="snacks"] { border-top: 5px solid var(--snack-color); }
+    .meal-card[data-meal="dinner"] { border-top: 5px solid var(--dinner-color); }
+
+    .meal-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1.5px solid var(--border-color);
+      background: var(--bg-card);
+      flex-wrap: wrap;
+    }
+
+    .meal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .meal-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .meal-card[data-meal="breakfast"] .meal-icon-box { background: var(--bf-bg); color: var(--bf-color); border: 1px solid var(--bf-border); }
+    .meal-card[data-meal="lunch"] .meal-icon-box { background: var(--lunch-bg); color: var(--lunch-color); border: 1px solid var(--lunch-border); }
+    .meal-card[data-meal="snacks"] .meal-icon-box { background: var(--snack-bg); color: var(--snack-color); border: 1px solid var(--snack-border); }
+    .meal-card[data-meal="dinner"] .meal-icon-box { background: var(--dinner-bg); color: var(--dinner-color); border: 1px solid var(--dinner-border); }
+
+    .meal-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .meal-card[data-meal="breakfast"] .meal-name { color: var(--bf-color); }
+    .meal-card[data-meal="lunch"] .meal-name { color: var(--lunch-color); }
+    .meal-card[data-meal="snacks"] .meal-name { color: var(--snack-color); }
+    .meal-card[data-meal="dinner"] .meal-name { color: var(--dinner-color); }
+
+    .meal-timing-pill {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .meal-status-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-served-now {
+      background-color: var(--badge-now-bg);
+      color: var(--badge-now-text);
+      border: 1px solid var(--veg-color);
+      animation: pulse-badge 2s infinite;
+    }
+
+    @keyframes pulse-badge {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.75; }
+    }
+
+    .badge-next {
+      background-color: var(--badge-next-bg);
+      color: var(--badge-next-text);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .badge-completed {
+      background-color: var(--bg-main);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    .badge-upcoming {
+      background-color: var(--bg-main);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .meal-body {
+      padding: 16px 20px;
+    }
+
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .item-card-mini {
+      background: var(--bg-main);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .item-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+
+    .diet-badge {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 1.5px solid currentColor;
+      padding: 2px;
+    }
+
+    .diet-badge.veg { color: var(--veg-color); }
+    .diet-badge.veg::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background-color: var(--veg-color); }
+
+    .diet-badge.nonveg { color: var(--nonveg-color); }
+    .diet-badge.nonveg::after { content: ""; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 8px solid var(--nonveg-color); }
+
+    .diet-badge.egg { color: var(--egg-color); }
+    .diet-badge.egg::after { content: ""; width: 7px; height: 7px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background-color: var(--egg-color); }
+
+    .special-badge-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ec4899, #8b5cf6);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-left: 6px;
+      display: inline-block;
+    }
+
+    /* WEEKLY TABLE OVERVIEW */
+    .weekly-table-container {
+      background: var(--bg-surface);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      overflow-x: auto;
+      box-shadow: var(--shadow-md);
+      display: none;
+      margin-top: 10px;
+    }
+
+    .weekly-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    .weekly-table th, .weekly-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+
+    .weekly-table th {
+      background: var(--bg-card);
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .weekly-table td.day-col {
+      background: var(--bg-card);
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--accent-primary);
+      width: 130px;
+    }
+
+    .weekly-item-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .weekly-item-list li {
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .rules-banner {
+      margin-top: 24px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1.5px solid rgba(239, 68, 68, 0.35);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-primary);
+    }
+
+    .rules-icon { font-size: 1.5rem; color: #ef4444; flex-shrink: 0; }
+    .rules-text { font-size: 0.88rem; font-weight: 700; line-height: 1.4; }
+
+    .app-footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+    }
+
+    .toast-notification {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent-primary);
+      color: #000;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast-notification.show { transform: translateY(0); opacity: 1; }
+    .hidden { display: none !important; }
+    .highlight-text { background-color: rgba(250, 204, 21, 0.3); color: #fff; padding: 0 3px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="app-container">
+      <div class="header-content">
+        <div class="top-bar">
+          <div class="brand-title-area">
+            <h1 class="brand-title">
+              <span id="appTitleText">Kalam Bhawan Mess</span>
+              <button id="editTitleBtn" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; margin-left:4px; padding:2px 4px;" title="Click to rename menu title">✏️</button>
+              <span class="brand-badge">H10-A,B</span>
+            </h1>
+            <div class="brand-subtitle">
+              <span>A.P.J. ABDUL KALAM BHAWAN</span>
+              <span class="mess-tag">🥦 Veg: 10A</span>
+              <span class="mess-tag">🍗 Non-Veg: 10B</span>
+              <span class="mess-tag" style="color: var(--accent-primary);">w.e.f. 28-07-26</span>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            <div class="live-clock-widget" title="Live System Time">
+              <div class="live-dot"></div>
+              <span id="liveClockDisplay">00:00:00 AM</span>
+            </div>
+
+            <button id="viewToggleBtn" class="icon-btn" title="Toggle Full Week View">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              <span id="viewToggleLabel">Week Grid</span>
+            </button>
+
+            <button id="themeToggleBtn" class="icon-btn" title="Toggle High-Contrast Theme">
+              <span id="themeIcon">☀️</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="status-summary-bar">
+          <div class="status-text">
+            <span>Current Status:</span>
+            <span id="activeMealSummary" style="color: var(--accent-primary); font-weight: 800;">Calculating live schedule...</span>
+          </div>
+          <div id="midnightTimerBadge" class="countdown-highlight">
+            Midnight in: --:--:--
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-container" style="flex: 1;">
+    
+    <section class="date-slider-section" id="dateSliderSection">
+      <div class="slider-header-tools">
+        <div class="section-label">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Select Day
+        </div>
+        <div class="slider-nav-btns">
+          <button class="nav-arrow-btn" id="scrollLeftBtn" title="Scroll Left">◄</button>
+          <button class="icon-btn" id="jumpTodayBtn" style="padding: 4px 10px; font-size: 0.78rem;">Jump to Today</button>
+          <button class="nav-arrow-btn" id="scrollRightBtn" title="Scroll Right">►</button>
+        </div>
+      </div>
+
+      <div class="date-ribbon-wrapper" id="dateRibbon"></div>
+    </section>
+
+    <section class="controls-toolbar">
+      <div class="search-box">
+        <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search dishes (e.g. Paneer, Biryani, Dosa, Samosa, Cheela)..." />
+      </div>
+
+      <div class="filter-chips-row">
+        <button class="filter-chip active" data-filter="all">All Items</button>
+        <button class="filter-chip" data-filter="veg"><span class="dot-tag dot-veg"></span> Pure Veg</button>
+        <button class="filter-chip" data-filter="nonveg"><span class="dot-tag dot-nonveg"></span> Non-Veg</button>
+        <button class="filter-chip" data-filter="egg"><span class="dot-tag dot-egg"></span> Egg</button>
+        <button class="filter-chip" data-filter="special"><span class="dot-tag dot-special"></span> Special Dishes ✨</button>
+      </div>
+    </section>
+
+    <section id="dailyView" class="daily-meals-container"></section>
+
+    <section id="weeklyView" class="weekly-table-container">
+      <table class="weekly-table">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Breakfast <br><small style="font-weight: normal; color: var(--text-muted);">7:30-9:00 AM (8:30-10:00 Sat/Sun)</small></th>
+            <th>Lunch <br><small style="font-weight: normal; color: var(--text-muted);">12:30 PM - 2:30 PM</small></th>
+            <th>Snacks <br><small style="font-weight: normal; color: var(--text-muted);">5:00 PM - 6:30 PM</small></th>
+            <th>Dinner <br><small style="font-weight: normal; color: var(--text-muted);">8:00 PM - 9:30 PM</small></th>
+          </tr>
+        </thead>
+        <tbody id="weeklyTableBody"></tbody>
+      </table>
+    </section>
+
+    <div class="rules-banner">
+      <div class="rules-icon">⚠️</div>
+      <div class="rules-text">
+        Mandatory to bring physical mess card (photo not allowed) — MESS COMMITTEE, H10-(A,B)
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="app-footer">
+    <div class="app-container">
+      <p>© A.P.J. ABDUL KALAM BHAWAN (H10-A,B) Mess Committee • Auto Midnight Rollover Active</p>
+    </div>
+  </footer>
+
+  <div id="toastNotification" class="toast-notification">
+    <span>🌙</span>
+    <span id="toastMessage">Midnight Rollover: Switched to today's menu!</span>
+  </div>
+
+  <script>
+    const MESS_DATA = {
+      MONDAY: {
+        breakfast: {
+          time: "7:30 AM - 9:00 AM",
+          items: [
+            { name: "Poha-Jalebi-Sev-lemon", type: "veg", special: true },
+            { name: "Bread-Jam", type: "veg" },
+            { name: "Milk, Chai, Sprouts", type: "veg" },
+            { name: "2 Banana / 2 Egg", type: "egg" }
+          ]
+        },
+        lunch: {
+          time: "12:30 PM - 2:30 PM",
+          items: [
+            { name: "Chana Masala", type: "veg" },
+            { name: "Chaach", type: "veg" },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        },
+        snacks: {
+          time: "5:00 PM - 6:30 PM",
+          items: [
+            { name: "2 Samose, Chutney", type: "veg", special: true },
+            { name: "Chai, Coffee", type: "veg" }
+          ]
+        },
+        dinner: {
+          time: "8:00 PM - 9:30 PM",
+          items: [
+            { name: "Lohia Sabzi", type: "veg" },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        }
+      },
+      TUESDAY: {
+        breakfast: {
+          time: "7:30 AM - 9:00 AM",
+          items: [
+            { name: "Soft Idli-Sambar-Coconut Chutney", type: "veg", special: true },
+            { name: "Cornflakes", type: "veg" },
+            { name: "Milk, Chai, Sprouts", type: "veg" },
+            { name: "2 Banana", type: "veg" }
+          ]
+        },
+        lunch: {
+          time: "12:30 PM - 2:30 PM",
+          items: [
+            { name: "Seasonal Veg", type: "veg" },
+            { name: "Dahi", type: "veg" },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        },
+        snacks: {
+          time: "5:00 PM - 6:30 PM",
+          items: [
+            { name: "Chana Pyaaj, Chutney", type: "veg" },
+            { name: "Coffee", type: "veg" }
+          ]
+        },
+        dinner: {
+          time: "8:00 PM - 9:30 PM",
+          items: [
+            { name: "Puri, Kheer, Aloo Sabzi", type: "veg", special: true },
+            { name: "Rice", type: "veg" }
+          ]
+        }
+      },
+      WEDNESDAY: {
+        breakfast: {
+          time: "7:30 AM - 9:00 AM",
+          items: [
+            { name: "Methi Paratha-Chutney, Aachar", type: "veg", special: true },
+            { name: "Bread Jam", type: "veg" },
+            { name: "Milk, Chai, Sprouts", type: "veg" },
+            { name: "2 Banana / 2 Egg", type: "egg" }
+          ]
+        },
+        lunch: {
+          time: "12:30 PM - 2:30 PM",
+          items: [
+            { name: "Curry Pakoda-Aloo Sabzi", type: "veg" },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        },
+        snacks: {
+          time: "5:00 PM - 6:30 PM",
+          items: [
+            { name: "Poha, nimbu", type: "veg" },
+            { name: "Chai", type: "veg" }
+          ]
+        },
+        dinner: {
+          time: "8:00 PM - 9:30 PM",
+          items: [
+            { name: "Matar Paneer", type: "veg", special: true },
+            { name: "Egg Curry / Egg Biryani", type: "nonveg", special: true },
+            { name: "Rice, Roti, Salad", type: "veg" }
+          ]
+        }
+      },
+      THURSDAY: {
+        breakfast: {
+          time: "7:30 AM - 9:00 AM",
+          items: [
+            { name: "Uttapam-Sambar-Chutney", type: "veg", special: true },
+            { name: "Cornflakes", type: "veg" },
+            { name: "Milk, Chai, Sprouts", type: "veg" },
+            { name: "2 Banana / 2 Egg", type: "egg" }
+          ]
+        },
+        lunch: {
+          time: "12:30 PM - 2:30 PM",
+          items: [
+            { name: "Rajma", type: "veg" },
+            { name: "Raita", type: "veg" },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        },
+        snacks: {
+          time: "5:00 PM - 6:30 PM",
+          items: [
+            { name: "Vada Pav / Aloo Tikki", type: "veg", special: true },
+            { name: "Chai", type: "veg" }
+          ]
+        },
+        dinner: {
+          time: "8:00 PM - 9:30 PM",
+          items: [
+            { name: "Sev Tamatar, Seasonal", type: "veg" },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        }
+      },
+      FRIDAY: {
+        breakfast: {
+          time: "7:30 AM - 9:00 AM",
+          items: [
+            { name: "Cheela-Chutney", type: "veg", special: true },
+            { name: "Bread-Jam", type: "veg" },
+            { name: "Milk, Chai, Sprouts", type: "veg" },
+            { name: "2 Banana / 2 Egg", type: "egg" }
+          ]
+        },
+        lunch: {
+          time: "12:30 PM - 2:30 PM",
+          items: [
+            { name: "Dum Aloo", type: "veg" },
+            { name: "Chaach", type: "veg" },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        },
+        snacks: {
+          time: "5:00 PM - 6:30 PM",
+          items: [
+            { name: "Mixed Pakoda", type: "veg", special: true },
+            { name: "Coffee", type: "veg" }
+          ]
+        },
+        dinner: {
+          time: "8:00 PM - 9:30 PM",
+          items: [
+            { name: "Soya Chunks Sabzi", type: "veg" },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        }
+      },
+      SATURDAY: {
+        breakfast: {
+          time: "8:30 AM - 10:00 AM",
+          items: [
+            { name: "Aloo Paratha-Dahi", type: "veg", special: true },
+            { name: "Cornflakes", type: "veg" },
+            { name: "Milk, Chai, Sprouts", type: "veg" },
+            { name: "2 Banana", type: "veg" }
+          ]
+        },
+        lunch: {
+          time: "12:30 PM - 2:30 PM",
+          items: [
+            { name: "Chhole Bhature / Dal Wafle", type: "veg", special: true },
+            { name: "Icecream / Custard", type: "veg", special: true },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        },
+        snacks: {
+          time: "5:00 PM - 6:30 PM",
+          items: [
+            { name: "Biscuit / Namkeen", type: "veg" },
+            { name: "Chai, Coffee", type: "veg" }
+          ]
+        },
+        dinner: {
+          time: "8:00 PM - 9:30 PM",
+          items: [
+            { name: "Dal-rice", type: "veg" },
+            { name: "Veg Biryani-Raita", type: "veg", special: true }
+          ]
+        }
+      },
+      SUNDAY: {
+        breakfast: {
+          time: "8:30 AM - 10:00 AM",
+          items: [
+            { name: "Masala Dosa-Sambar-Chutney", type: "veg", special: true },
+            { name: "Bread-Jam", type: "veg" },
+            { name: "Milk, Chai, Sprouts", type: "veg" },
+            { name: "2 Banana / 2 Egg", type: "egg" }
+          ]
+        },
+        lunch: {
+          time: "12:30 PM - 2:30 PM",
+          items: [
+            { name: "Malai Kofta", type: "veg", special: true },
+            { name: "Raita", type: "veg" },
+            { name: "Dal, Rice, Roti, Salad", type: "veg" }
+          ]
+        },
+        snacks: {
+          time: "5:00 PM - 6:30 PM",
+          items: [
+            { name: "Bhel-boiled potato-chutney", type: "veg", special: true },
+            { name: "Chai", type: "veg" }
+          ]
+        },
+        dinner: {
+          time: "8:00 PM - 9:30 PM",
+          items: [
+            { name: "Butter Paneer Masala", type: "veg", special: true },
+            { name: "Chicken", type: "nonveg", special: true },
+            { name: "Rice, Roti, Salad", type: "veg" }
+          ]
+        }
+      }
+    };
+
+    const DAYS_ORDER = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+    
+    function getMealMinutes(dayName) {
+      const isWeekend = (dayName === "SATURDAY" || dayName === "SUNDAY");
+      return [
+        { key: "breakfast", label: "Breakfast", icon: "☕", start: isWeekend ? (8 * 60 + 30) : (7 * 60 + 30), end: isWeekend ? (10 * 60) : (9 * 60) },
+        { key: "lunch", label: "Lunch", icon: "🍛", start: 12 * 60 + 30, end: 14 * 60 + 30 },
+        { key: "snacks", label: "Snacks", icon: "🍵", start: 17 * 60, end: 18 * 60 + 30 },
+        { key: "dinner", label: "Dinner", icon: "🍽️", start: 20 * 60, end: 21 * 60 + 30 }
+      ];
+    }
+
+    let selectedDayIndex = 0;
+    let todayDayIndex = 0;
+    let currentFilter = "all";
+    let searchQuery = "";
+    let isWeekGridMode = false;
+    let currentWeekDates = [];
+
+    const dateRibbon = document.getElementById("dateRibbon");
+    const dailyView = document.getElementById("dailyView");
+    const weeklyView = document.getElementById("weeklyView");
+    const weeklyTableBody = document.getElementById("weeklyTableBody");
+    const liveClockDisplay = document.getElementById("liveClockDisplay");
+    const activeMealSummary = document.getElementById("activeMealSummary");
+    const midnightTimerBadge = document.getElementById("midnightTimerBadge");
+    const searchInput = document.getElementById("searchInput");
+    const viewToggleBtn = document.getElementById("viewToggleBtn");
+    const viewToggleLabel = document.getElementById("viewToggleLabel");
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    const themeIcon = document.getElementById("themeIcon");
+    const toastNotification = document.getElementById("toastNotification");
+    const toastMessage = document.getElementById("toastMessage");
+
+    function calculateCurrentWeek() {
+      const now = new Date();
+      const jsDay = now.getDay();
+      todayDayIndex = (jsDay === 0) ? 6 : jsDay - 1;
+      selectedDayIndex = todayDayIndex;
+
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - todayDayIndex);
+      monday.setHours(0, 0, 0, 0);
+
+      currentWeekDates = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        currentWeekDates.push({
+          dayName: DAYS_ORDER[i],
+          shortDay: DAYS_ORDER[i].substring(0, 3),
+          dateNumber: d.getDate(),
+          monthShort: d.toLocaleString('en-US', { month: 'short' }),
+          year: d.getFullYear(),
+          isToday: (i === todayDayIndex)
+        });
+      }
+    }
+
+    function renderDateRibbon() {
+      dateRibbon.innerHTML = "";
+      currentWeekDates.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = `date-card ${index === selectedDayIndex ? 'active' : ''} ${item.isToday ? 'is-today' : ''}`;
+        card.dataset.index = index;
+
+        card.innerHTML = `
+          ${item.isToday ? '<span class="today-pill">TODAY</span>' : ''}
+          <span class="date-day-name">${item.shortDay}</span>
+          <span class="date-number">${item.dateNumber}</span>
+          <span class="date-month-year">${item.monthShort}</span>
+        `;
+
+        card.addEventListener("click", () => {
+          selectedDayIndex = index;
+          updateActiveDateCard();
+          renderDailyMeals();
+        });
+
+        dateRibbon.appendChild(card);
+      });
+      autoCenterActiveDateCard();
+    }
+
+    function updateActiveDateCard() {
+      const cards = dateRibbon.querySelectorAll(".date-card");
+      cards.forEach((card, idx) => {
+        if (idx === selectedDayIndex) card.classList.add("active");
+        else card.classList.remove("active");
+      });
+      autoCenterActiveDateCard();
+    }
+
+    function autoCenterActiveDateCard() {
+      const activeCard = dateRibbon.querySelector(".date-card.active");
+      if (activeCard) {
+        const containerWidth = dateRibbon.offsetWidth;
+        const cardLeft = activeCard.offsetLeft;
+        const cardWidth = activeCard.offsetWidth;
+        dateRibbon.scrollTo({
+          left: cardLeft - (containerWidth / 2) + (cardWidth / 2),
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    function renderDailyMeals() {
+      if (isWeekGridMode) return;
+
+      const activeDay = DAYS_ORDER[selectedDayIndex];
+      const dayMenu = MESS_DATA[activeDay];
+      const mealsInfo = getMealMinutes(activeDay);
+      
+      const now = new Date();
+      const currentMin = now.getHours() * 60 + now.getMinutes();
+
+      dailyView.innerHTML = "";
+
+      mealsInfo.forEach((mealInfo) => {
+        const mealKey = mealInfo.key;
+        const mealData = dayMenu[mealKey];
+        const items = mealData.items;
+
+        const filteredItems = items.filter(item => {
+          if (currentFilter === "veg" && item.type !== "veg") return false;
+          if (currentFilter === "nonveg" && item.type !== "nonveg") return false;
+          if (currentFilter === "egg" && item.type !== "egg") return false;
+          if (currentFilter === "special" && !item.special) return false;
+          
+          if (searchQuery.trim() !== "") {
+            const q = searchQuery.toLowerCase();
+            return item.name.toLowerCase().includes(q);
+          }
+          return true;
+        });
+
+        let statusBadgeHTML = "";
+        let isCurrentMealActive = false;
+
+        if (selectedDayIndex === todayDayIndex) {
+          if (currentMin >= mealInfo.start && currentMin <= mealInfo.end) {
+            statusBadgeHTML = `<span class="meal-status-badge badge-served-now">● Served Now</span>`;
+            isCurrentMealActive = true;
+          } else if (currentMin < mealInfo.start) {
+            const diffMin = mealInfo.start - currentMin;
+            const hrs = Math.floor(diffMin / 60);
+            const mins = diffMin % 60;
+            const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+            statusBadgeHTML = `<span class="meal-status-badge badge-next">Next Meal in ${timeStr}</span>`;
+          } else {
+            statusBadgeHTML = `<span class="meal-status-badge badge-completed">Completed</span>`;
+          }
+        } else if (selectedDayIndex > todayDayIndex) {
+          statusBadgeHTML = `<span class="meal-status-badge badge-upcoming">Upcoming</span>`;
+        } else {
+          statusBadgeHTML = `<span class="meal-status-badge badge-completed">Past</span>`;
+        }
+
+        const card = document.createElement("div");
+        card.className = `meal-card ${isCurrentMealActive ? 'active-meal' : ''}`;
+        card.dataset.meal = mealKey;
+
+        if (searchQuery.trim() !== "" && filteredItems.length === 0) return;
+
+        card.innerHTML = `
+          <div class="meal-header">
+            <div class="meal-title-group">
+              <div class="meal-icon-box">${mealInfo.icon}</div>
+              <div>
+                <h2 class="meal-name">${mealInfo.label}</h2>
+                <div class="meal-timing-pill">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+                  ${mealData.time}
+                </div>
+              </div>
+            </div>
+            ${statusBadgeHTML}
+          </div>
+
+          <div class="meal-body">
+            <div class="items-grid">
+              ${filteredItems.length > 0 ? filteredItems.map(item => {
+                let highlightedName = escapeHTML(item.name);
+                if (searchQuery.trim() !== "") {
+                  const reg = new RegExp(`(${escapeRegExp(searchQuery)})`, 'gi');
+                  highlightedName = highlightedName.replace(reg, '<mark class="highlight-text">$1</mark>');
+                }
+
+                return `
+                  <div class="item-card-mini">
+                    <span class="item-title">
+                      ${highlightedName}
+                      ${item.special ? '<span class="special-badge-tag">Special</span>' : ''}
+                    </span>
+                    <span class="diet-badge ${item.type}" title="${item.type.toUpperCase()}"></span>
+                  </div>
+                `;
+              }).join("") : `<div style="color: var(--text-muted); font-size: 0.88rem; font-style: italic;">No matching items for selected filter.</div>`}
+            </div>
+          </div>
+        `;
+
+        dailyView.appendChild(card);
+      });
+
+      if (searchQuery.trim() !== "" && dailyView.children.length === 0) {
+        dailyView.innerHTML = `
+          <div style="text-align: center; padding: 40px 20px; background: var(--bg-surface); border: 2px dashed var(--border-color); border-radius: 16px;">
+            <div style="font-size: 2rem; margin-bottom: 8px;">🔍</div>
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">No dishes found matching "${escapeHTML(searchQuery)}"</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 4px;">Try searching for another dish or clear the filter.</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderWeeklyTable() {
+      weeklyTableBody.innerHTML = "";
+      DAYS_ORDER.forEach((dayName, idx) => {
+        const dayMenu = MESS_DATA[dayName];
+        const isToday = (idx === todayDayIndex);
+        const tr = document.createElement("tr");
+        if (isToday) tr.style.backgroundColor = "var(--bg-card-active)";
+
+        tr.innerHTML = `
+          <td class="day-col">
+            ${dayName}
+            ${isToday ? '<br><span class="today-pill" style="position:static; display:inline-block; margin-top:4px;">TODAY</span>' : ''}
+          </td>
+          ${["breakfast", "lunch", "snacks", "dinner"].map(mealKey => {
+            const items = dayMenu[mealKey].items;
+            return `
+              <td>
+                <ul class="weekly-item-list">
+                  ${items.map(item => `
+                    <li>
+                      <span>${item.name} ${item.special ? '✨' : ''}</span>
+                      <span class="diet-badge ${item.type}" style="transform: scale(0.85);"></span>
+                    </li>
+                  `).join("")}
+                </ul>
+              </td>
+            `;
+          }).join("")}
+        `;
+        weeklyTableBody.appendChild(tr);
+      });
+    }
+
+    let lastCheckedDayIndex = -1;
+
+    function updateLiveTimers() {
+      const now = new Date();
+
+      liveClockDisplay.textContent = now.toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+      });
+
+      const currentJsDay = now.getDay();
+      const currentCalculatedDayIndex = (currentJsDay === 0) ? 6 : currentJsDay - 1;
+
+      if (lastCheckedDayIndex !== -1 && currentCalculatedDayIndex !== lastCheckedDayIndex) {
+        calculateCurrentWeek();
+        renderDateRibbon();
+        renderDailyMeals();
+        renderWeeklyTable();
+        showToast(`Midnight Update: Menu shifted to ${DAYS_ORDER[todayDayIndex]}!`);
+      }
+      lastCheckedDayIndex = currentCalculatedDayIndex;
+
+      const nextMidnight = new Date(now);
+      nextMidnight.setHours(24, 0, 0, 0);
+      const msUntilMidnight = nextMidnight - now;
+
+      const totalSec = Math.floor(msUntilMidnight / 1000);
+      const mHrs = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+      const mMins = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+      const mSecs = String(totalSec % 60).padStart(2, '0');
+      midnightTimerBadge.textContent = `Midnight in: ${mHrs}:${mMins}:${mSecs}`;
+
+      const currentMin = now.getHours() * 60 + now.getMinutes();
+      const todayName = DAYS_ORDER[todayDayIndex];
+      const todayMeals = getMealMinutes(todayName);
+
+      let activeMealText = "";
+      const activeMeal = todayMeals.find(m => currentMin >= m.start && currentMin <= m.end);
+
+      if (activeMeal) {
+        const remainingMin = activeMeal.end - currentMin;
+        activeMealText = `🟢 ${activeMeal.label} Served Now (Ends in ${remainingMin}m)`;
+      } else {
+        const nextMeal = todayMeals.find(m => currentMin < m.start);
+        if (nextMeal) {
+          const diff = nextMeal.start - currentMin;
+          const h = Math.floor(diff / 60);
+          const m = diff % 60;
+          const countStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
+          activeMealText = `⏳ Next: ${nextMeal.label} starts in ${countStr}`;
+        } else {
+          activeMealText = `🌙 All meals completed for today. Next: Breakfast tomorrow at 7:30 AM`;
+        }
+      }
+
+      activeMealSummary.textContent = activeMealText;
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value;
+      renderDailyMeals();
+    });
+
+    document.querySelectorAll(".filter-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        currentFilter = chip.dataset.filter;
+        renderDailyMeals();
+      });
+    });
+
+    document.getElementById("scrollLeftBtn").addEventListener("click", () => {
+      dateRibbon.scrollBy({ left: -180, behavior: 'smooth' });
+    });
+
+    document.getElementById("scrollRightBtn").addEventListener("click", () => {
+      dateRibbon.scrollBy({ left: 180, behavior: 'smooth' });
+    });
+
+    document.getElementById("jumpTodayBtn").addEventListener("click", () => {
+      selectedDayIndex = todayDayIndex;
+      updateActiveDateCard();
+      renderDailyMeals();
+    });
+
+    viewToggleBtn.addEventListener("click", () => {
+      isWeekGridMode = !isWeekGridMode;
+      if (isWeekGridMode) {
+        dailyView.classList.add("hidden");
+        weeklyView.style.display = "block";
+        viewToggleLabel.textContent = "Daily Cards";
+        renderWeeklyTable();
+      } else {
+        weeklyView.style.display = "none";
+        dailyView.classList.remove("hidden");
+        viewToggleLabel.textContent = "Week Grid";
+        renderDailyMeals();
+      }
+    });
+
+    themeToggleBtn.addEventListener("click", () => {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+      const nextTheme = currentTheme === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", nextTheme);
+      themeIcon.textContent = nextTheme === "dark" ? "☀️" : "🌙";
+      localStorage.setItem("mess_menu_theme", nextTheme);
+    });
+
+    const savedTheme = localStorage.getItem("mess_menu_theme") || "dark";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    themeIcon.textContent = savedTheme === "dark" ? "☀️" : "🌙";
+
+    const appTitleText = document.getElementById("appTitleText");
+    const editTitleBtn = document.getElementById("editTitleBtn");
+    const savedCustomTitle = localStorage.getItem("mess_menu_custom_title");
+    if (savedCustomTitle) {
+      appTitleText.textContent = savedCustomTitle;
+      document.title = `${savedCustomTitle} - H10-A,B`;
+    }
+
+    editTitleBtn.addEventListener("click", () => {
+      const newTitle = prompt("Enter custom title for your Mess Menu:", appTitleText.textContent);
+      if (newTitle !== null && newTitle.trim() !== "") {
+        appTitleText.textContent = newTitle.trim();
+        document.title = `${newTitle.trim()} - H10-A,B`;
+        localStorage.setItem("mess_menu_custom_title", newTitle.trim());
+        showToast("Menu title updated!");
+      }
+    });
+
+    function showToast(msg) {
+      toastMessage.textContent = msg;
+      toastNotification.classList.add("show");
+      setTimeout(() => { toastNotification.classList.remove("show"); }, 4000);
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    calculateCurrentWeek();
+    renderDateRibbon();
+    renderDailyMeals();
+    updateLiveTimers();
+    setInterval(updateLiveTimers, 1000);
+    setInterval(renderDailyMeals, 30000);
+  </script>
+</body>
+</html>
